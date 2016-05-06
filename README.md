@@ -1,4 +1,4 @@
-woxxy / MySQL-backup-to-Amazon-S3
+abdul / Mongo-backup-to-Amazon-S3
 =================================
 
 (This is not really an application, just a manual and some lines of code)
@@ -31,34 +31,34 @@ Setup
 
 		s3cmd mb s3://my-database-backups
 	
-6. Put the mysqltos3.sh file somewhere in your server, like `/home/youruser`
-7. Give the file 755 permissions `chmod 755 /home/youruser/mysqltos3.sh` or via FTP
-8. Edit the variables near the top of the mysqltos3.sh file to match your bucket and MySQL authentication
+6. Put the mongotos3.sh file somewhere in your server, like `/home/youruser`
+7. Give the file 755 permissions `chmod 755 /home/youruser/mongotos3.sh` or via FTP
+8. Edit the variables near the top of the mongotos3.sh file to match your bucket and Mongo authentication
 
 Now we're set. You can use it manually:
 
 	#set a new daily backup, and store the previous day as "previous_day"
-	sh /home/youruser/mysqltos3.sh
+	sh /home/youruser/mongotos3.sh
 	
 	#set a new weekly backup, and store previous week as "previous_week"
-	/home/youruser/mysqltos3.sh week
+	/home/youruser/mongotos3.sh week
 	
 	#set a new weekly backup, and store previous month as "previous_month"
-	/home/youruser/mysqltos3.sh month
+	/home/youruser/mongotos3.sh month
 	
 But, we don't want to think about it until something breaks! So enter `crontab -e` and insert the following after editing the folders
 
-	# daily MySQL backup to S3 (not on first day of month or sundays)
-	0 3 2-31 * 1-6 sh /home/youruser/mysqltos3.sh day
-	# weekly MySQL backup to S3 (on sundays, but not the first day of the month)
-	0 3 2-31 * 0 sh /home/youruser/mysqltos3.sh week
-	# monthly MySQL backup to S3
-	0 3 1 * * sh /home/youruser/mysqltos3.sh month
+	# daily Mongo backup to S3 (not on first day of month or sundays)
+	0 3 2-31 * 1-6 sh /home/youruser/mongotos3.sh day
+	# weekly Mongo backup to S3 (on sundays, but not the first day of the month)
+	0 3 2-31 * 0 sh /home/youruser/mongotos3.sh week
+	# monthly Mongo backup to S3
+	0 3 1 * * sh /home/youruser/mongotos3.sh month
 
 Or, if you'd prefer to have the script determine the current date and day of the week, insert the following after editing the folders
 
 	# automatic daily / weekly / monthly backup to S3.
-	0 3 * * * sh /home/youruser/mysqltos3.sh auto
+	0 3 * * * sh /home/youruser/mongotos3.sh auto
 
 And you're set.
 
