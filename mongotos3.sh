@@ -4,17 +4,17 @@
 # Under a MIT license
 
 # change these variables to what you need
-MYSQLROOT=root
-MYSQLPASS=password
+#MONGOADMIN=root
+#MONGOPASSWORD=password
 S3BUCKET=bucketname
 FILENAME=filename
-DATABASE='--all-databases'
+DATABASE=''
 # the following line prefixes the backups with the defined directory. it must be blank or end with a /
-S3PATH=mysql_backup/
-# when running via cron, the PATHs MIGHT be different. If you have a custom/manual MYSQL install, you should set this manually like MYSQLDUMPPATH=/usr/local/mysql/bin/
-MYSQLDUMPPATH=
+S3PATH=mongo_backup/
+# when running via cron, the PATHs MIGHT be different. If you have a custom/manual Mongo install, you should set this manually like MONGODUMPPATH=/usr/bin/mongodump
+MONGODUMPPATH=
 #tmp path.
-TMP_PATH=~/
+TMP_PATH=~/tmp/mongo-backups/
 
 DATESTAMP=$(date +".%m.%d.%Y")
 DAY=$(date +"%d")
@@ -36,14 +36,14 @@ echo "Selected period: $PERIOD."
 echo "Starting backing up the database to a file..."
 
 # dump all databases
-${MYSQLDUMPPATH}mysqldump --quick --user=${MYSQLROOT} --password=${MYSQLPASS} ${DATABASE} > ${TMP_PATH}${FILENAME}.sql
+${MONGODUMPPATH}mysqldump --db ${DATABASE} --out ${TMP_PATH}${FILENAME}
 
-echo "Done backing up the database to a file."
+echo "Done backing up the database to a folder."
 echo "Starting compression..."
 
-tar czf ${TMP_PATH}${FILENAME}${DATESTAMP}.tar.gz ${TMP_PATH}${FILENAME}.sql
+tar czf ${TMP_PATH}${FILENAME}${DATESTAMP}.tar.gz ${TMP_PATH}${FILENAME}
 
-echo "Done compressing the backup file."
+echo "Done compressing the backup folder."
 
 # we want at least two backups, two months, two weeks, and two days
 echo "Removing old backup (2 ${PERIOD}s ago)..."
@@ -61,7 +61,8 @@ echo "New backup uploaded."
 
 echo "Removing the cache files..."
 # remove databases dump
-rm ${TMP_PATH}${FILENAME}.sql
+# Uncomment only when you have set TMP_PATH and FILENAME; if these variables are unset, rm -rf can be something bad. 
+#rm -rf ${TMP_PATH}${FILENAME}
 rm ${TMP_PATH}${FILENAME}${DATESTAMP}.tar.gz
 echo "Files removed."
 echo "All done."
